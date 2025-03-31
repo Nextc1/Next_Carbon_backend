@@ -171,13 +171,33 @@ class OrderController {
         })
         .eq("id", data.propertyId);
 
-      await supabase.from("owners").insert([
-        {
-          user_id: data.userId,
-          property_id: data.propertyId,
-          credits: data.shares,
-        },
-      ]);
+      const existingOwner = await supabase
+        .from("owners")
+        .select("*")
+        .eq("user_id", data.userId)
+        .eq("property_id", data.propertyId);
+
+      if (
+        existingOwner &&
+        existingOwner.data &&
+        existingOwner.data.length > 0
+      ) {
+        await supabase
+          .from("owners")
+          .update({
+            credits: existingOwner.data[0].credits + data.shares,
+          })
+          .eq("user_id", data.userId)
+          .eq("property_id", data.propertyId);
+      } else {
+        await supabase.from("owners").insert([
+          {
+            user_id: data.userId,
+            property_id: data.propertyId,
+            credits: data.shares,
+          },
+        ]);
+      }
 
       res.status(200).json({
         success: true,
