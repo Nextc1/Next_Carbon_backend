@@ -3,6 +3,7 @@ import express from "express";
 import { CONFIG } from "./lib/config";
 import orderRouter from "./routes/order.routes";
 import propertyRouter from "./routes/property.routes";
+import offsetRouter from "./routes/offset.routes";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.get("/", (_req, res) => {
 // Load Routes
 app.use("/api/orders", orderRouter);
 app.use("/api/property", propertyRouter);
+app.use("/api/offset", offsetRouter);
 
 app.listen(CONFIG.port, () => {
   console.log(`Server online: http://localhost:${CONFIG.port}`);

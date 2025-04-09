@@ -11,4 +11,5 @@ export const CONFIG = {
   infuraApiKey: process.env.INFURA_API_KEY ?? "",
   privateKey: process.env.PRIVATE_KEY ?? "",
   contractAddress: process.env.CONTRACT_ADDRESS ?? "",
+  companyAddress: process.env.COMPANY_ADDRESS ?? "",
 };

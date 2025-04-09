@@ -13,9 +13,6 @@ const offsetCreateSchema = z.object({
   description: z.string({
     message: "Order currency must be a valid string",
   }),
-  transactionHash: z.string({
-    message: "Transaction has must be a valid string",
-  }),
   beneficiaryAddress: z.string({
     message: "Beneficiary address must be a valid string",
   }),
