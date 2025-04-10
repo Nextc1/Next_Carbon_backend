@@ -126,12 +126,14 @@ class OffsetController {
                 beneficiary_name: data.beneficiaryName,
               },
             ])
-            .select();
+            .select()
+            .single();
 
           if (dbData) {
             res.status(200).json({
               success: true,
               message: `Offsetted ${data.credits} successfully`,
+              data: dbData,
             });
           } else {
             console.log(dbError);
