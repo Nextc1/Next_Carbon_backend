@@ -35,7 +35,7 @@ class OffsetController {
         console.log(propertyError);
         res.status(400).json({
           success: false,
-          error: "Failed to offset credits",
+          error: "Failed to offset credits - 1",
         });
         return;
       }
@@ -61,7 +61,7 @@ class OffsetController {
           console.log(deleteError);
           res.status(400).json({
             success: false,
-            error: "Failed to offset credits",
+            error: "Failed to offset credits - 2",
           });
           return;
         }
@@ -78,7 +78,7 @@ class OffsetController {
           console.log(updateError);
           res.status(400).json({
             success: false,
-            error: "Failed to offset credits",
+            error: "Failed to offset credits - 3",
           });
           return;
         }
@@ -94,6 +94,7 @@ class OffsetController {
           );
         } catch (error) {
           console.log(`Offset error: ${error}`);
+
           if (remainingCredits === 0) {
             // Restore the deleted record
             await supabase.from("owners").insert({
@@ -110,6 +111,14 @@ class OffsetController {
               .eq("user_id", ownerData[0].user_id)
               .eq("property_id", ownerData[0].property_id);
           }
+
+          res.status(400).json({
+            success: false,
+            error: "Blockchain transaction failed",
+            message: error,
+          });
+
+          return;
         }
 
         if (hash !== "" || hash !== null) {
@@ -126,12 +135,14 @@ class OffsetController {
                 beneficiary_name: data.beneficiaryName,
               },
             ])
-            .select();
+            .select()
+            .single();
 
           if (dbData) {
             res.status(200).json({
               success: true,
               message: `Offsetted ${data.credits} successfully`,
+              data: dbData,
             });
           } else {
             console.log(dbError);
@@ -139,7 +150,7 @@ class OffsetController {
 
             res.status(400).json({
               success: false,
-              error: "Failed to offset credits",
+              error: "Failed to offset credits - 4",
             });
 
             return;
