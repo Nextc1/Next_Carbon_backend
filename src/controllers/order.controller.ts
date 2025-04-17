@@ -65,7 +65,7 @@ class OrderController {
       }
 
       const order = await razorpay.orders.create({
-        amount: propertyData[0].price * data.shares * 100,
+        amount: Math.round(propertyData[0].price * data.shares * 100),
         currency: data.currency ?? "INR",
         receipt: orderReceipt,
       });
