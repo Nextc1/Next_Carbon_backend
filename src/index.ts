@@ -12,7 +12,7 @@ app.use(cors());
 
 app.get("/", (_req, res) => {
   res.json({
-    message: "Hello from Nextcarbon!",
+    message: "Hello from Next Carbon!",
   });
 });
 
