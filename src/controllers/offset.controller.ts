@@ -23,12 +23,14 @@ class OffsetController {
         .from("owners")
         .select("*")
         .eq("user_id", data.userId)
-        .eq("property_id", data.propertyId);
+        .eq("property_id", data.propertyId)
+        .single();
 
       const { data: propertyData, error: propertyError } = await supabase
         .from("property_data")
         .select("*")
-        .eq("id", data.propertyId);
+        .eq("id", data.propertyId)
+        .single();
 
       if (!ownerData || ownerError || !propertyData || propertyError) {
         console.log(ownerError);
@@ -40,22 +42,22 @@ class OffsetController {
         return;
       }
 
-      if (data.credits > ownerData[0].credits) {
+      if (data.credits > ownerData.credits) {
         res.status(400).json({
           success: false,
-          error: `You don't have enough credits. Available credits: ${ownerData[0].credits}`,
+          error: `You don't have enough credits. Available credits: ${ownerData.credits}`,
         });
         return;
       }
 
-      const remainingCredits = ownerData[0].credits - data.credits;
+      const remainingCredits = ownerData.credits - data.credits;
 
       if (remainingCredits === 0) {
         const { error: deleteError } = await supabase
           .from("owners")
           .delete()
-          .eq("user_id", ownerData[0].user_id)
-          .eq("property_id", ownerData[0].property_id);
+          .eq("user_id", ownerData.user_id)
+          .eq("property_id", ownerData.property_id);
 
         if (deleteError) {
           console.log(deleteError);
@@ -71,8 +73,8 @@ class OffsetController {
           .update({
             credits: remainingCredits,
           })
-          .eq("user_id", ownerData[0].user_id)
-          .eq("property_id", ownerData[0].property_id);
+          .eq("user_id", ownerData.user_id)
+          .eq("property_id", ownerData.property_id);
 
         if (updateError) {
           console.log(updateError);
@@ -90,7 +92,7 @@ class OffsetController {
             data.credits,
             CONFIG.companyAddress,
             data.beneficiaryAddress,
-            propertyData[0].name
+            propertyData.name
           );
         } catch (error) {
           console.log(`Offset error: ${error}`);
@@ -98,18 +100,17 @@ class OffsetController {
           if (remainingCredits === 0) {
             // Restore the deleted record
             await supabase.from("owners").insert({
-              id: propertyData[0].id,
-              user_id: ownerData[0].user_id,
-              property_id: ownerData[0].property_id,
+              user_id: ownerData.user_id,
+              property_id: ownerData.property_id,
               credits: data.credits,
             });
           } else {
             // Restore the original credits
             await supabase
               .from("owners")
-              .update({ credits: ownerData[0].credits })
-              .eq("user_id", ownerData[0].user_id)
-              .eq("property_id", ownerData[0].property_id);
+              .update({ credits: ownerData.credits })
+              .eq("user_id", ownerData.user_id)
+              .eq("property_id", ownerData.property_id);
           }
 
           res.status(400).json({
