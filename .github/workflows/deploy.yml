@@ -17,9 +17,10 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            source ~/.bashrc
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh 
             cd ~/backend
             git pull origin main
-            /home/ubuntu/.nvm/versions/node/v23.11.0/bin/pnpm install --frozen-lockfile
-            /home/ubuntu/.nvm/versions/node/v23.11.0/bin/pnpm run build
-            /home/ubuntu/.nvm/versions/node/v23.11.0/bin/pm2 restart 0
+            pnpm install --frozen-lockfile
+            pnpm run build
+            pm2 restart 0
