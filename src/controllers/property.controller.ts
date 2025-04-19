@@ -7,7 +7,10 @@ import {
 
 class PropertyController {
   async getAllProperties(_req: Request, res: Response) {
-    const { data, error } = await supabase.from("property_data").select("*");
+    const { data, error } = await supabase
+      .from("property_data")
+      .select("*")
+      .single();
 
     if (!data) {
       res.status(400).json({
@@ -32,20 +35,13 @@ class PropertyController {
       .select("*")
       .eq("id", propertyId);
 
-    if (!data) {
+    if (!data || error) {
       res.status(400).json({
-        success: false,
-        error,
-      });
-
-      return;
-    }
-
-    if (data.length <= 0) {
-      res.json({
         success: false,
         error: "No property found with that id",
       });
+
+      return;
     }
 
     res.json({
