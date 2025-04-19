@@ -47,7 +47,7 @@ class OrderController {
         .eq("id", data.propertyId)
         .single();
 
-      if (!propertyData || propertyData == null) {
+      if (!propertyData) {
         res.status(400).json({
           success: false,
           error: "Property could not be found",
@@ -146,7 +146,7 @@ class OrderController {
         .eq("id", data.propertyId)
         .single();
 
-      if (!propertyData || propertyData == null) {
+      if (!propertyData) {
         res.status(400).json({
           success: false,
           error: "Invalid property id provided",
@@ -173,18 +173,18 @@ class OrderController {
         })
         .eq("id", data.propertyId);
 
-      const existingOwner = await supabase
+      const { data: ownerData } = await supabase
         .from("owners")
         .select("*")
         .eq("user_id", data.userId)
         .eq("property_id", data.propertyId)
         .single();
 
-      if (existingOwner) {
+      if (ownerData) {
         await supabase
           .from("owners")
           .update({
-            credits: existingOwner.data.credits + data.shares,
+            credits: ownerData.credits + data.shares,
           })
           .eq("user_id", data.userId)
           .eq("property_id", data.propertyId);
