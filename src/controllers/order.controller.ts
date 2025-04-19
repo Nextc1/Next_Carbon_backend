@@ -44,9 +44,10 @@ class OrderController {
       const { data: propertyData } = await supabase
         .from("property_data")
         .select("*")
-        .eq("id", data.propertyId);
+        .eq("id", data.propertyId)
+        .single();
 
-      if (!propertyData || propertyData.length <= 0) {
+      if (!propertyData || propertyData == null) {
         res.status(400).json({
           success: false,
           error: "Property could not be found",
@@ -55,17 +56,17 @@ class OrderController {
         return;
       }
 
-      if (propertyData[0].available_shares < data.shares) {
+      if (propertyData.available_shares < data.shares) {
         res.status(400).json({
           success: false,
-          error: `Invalid request: Only ${propertyData[0].available_shares} shares are available. You can't place an order for ${data.shares} shares.`,
+          error: `Invalid request: Only ${propertyData.available_shares} shares are available. You can't place an order for ${data.shares} shares.`,
         });
 
         return;
       }
 
       const order = await razorpay.orders.create({
-        amount: propertyData[0].price * data.shares * 100,
+        amount: propertyData.price * data.shares * 100,
         currency: data.currency ?? "INR",
         receipt: orderReceipt,
       });
@@ -142,9 +143,10 @@ class OrderController {
       const { data: propertyData } = await supabase
         .from("property_data")
         .select("*")
-        .eq("id", data.propertyId);
+        .eq("id", data.propertyId)
+        .single();
 
-      if (!propertyData || propertyData.length <= 0) {
+      if (!propertyData || propertyData == null) {
         res.status(400).json({
           success: false,
           error: "Invalid property id provided",
@@ -153,7 +155,7 @@ class OrderController {
         return;
       }
 
-      if (propertyData[0].available_shares < data.shares) {
+      if (propertyData.available_shares < data.shares) {
         res.status(400).json({
           success: false,
           error: `Payment was successfull but ${data.shares} shares are not left. Maybe someone already bought it.`,
@@ -167,7 +169,7 @@ class OrderController {
       await supabase
         .from("property_data")
         .update({
-          available_shares: propertyData[0].available_shares - data.shares,
+          available_shares: propertyData.available_shares - data.shares,
         })
         .eq("id", data.propertyId);
 
@@ -175,17 +177,14 @@ class OrderController {
         .from("owners")
         .select("*")
         .eq("user_id", data.userId)
-        .eq("property_id", data.propertyId);
+        .eq("property_id", data.propertyId)
+        .single();
 
-      if (
-        existingOwner &&
-        existingOwner.data &&
-        existingOwner.data.length > 0
-      ) {
+      if (existingOwner) {
         await supabase
           .from("owners")
           .update({
-            credits: existingOwner.data[0].credits + data.shares,
+            credits: existingOwner.data.credits + data.shares,
           })
           .eq("user_id", data.userId)
           .eq("property_id", data.propertyId);
