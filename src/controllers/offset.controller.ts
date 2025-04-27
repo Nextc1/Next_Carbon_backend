@@ -143,7 +143,10 @@ class OffsetController {
             res.status(200).json({
               success: true,
               message: `Offsetted ${data.credits} successfully`,
-              data: dbData,
+              data: {
+                ...dbData,
+                companyName: propertyData.name,
+              },
             });
           } else {
             console.log(dbError);
