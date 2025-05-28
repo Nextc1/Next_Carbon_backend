@@ -17,6 +17,16 @@ const abi = [
     stateMutability: "nonpayable",
     type: "function",
   },
+  {
+    inputs: [
+      { internalType: "uint256", name: "amount", type: "uint256" },
+      { internalType: "string", name: "projectName", type: "string" },
+    ],
+    name: "projectComplete",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
 ];
 
 const contract = new ethers.Contract(CONFIG.contractAddress, abi, wallet);
@@ -41,6 +51,20 @@ export const offsetAgainstProject = async (
     return tx.hash;
   } catch (error) {
     console.error("Error in offsetAgainstProject:", error);
+    throw error;
+  }
+};
+
+export const completeProject = async (amount: number, projectName: string) => {
+  try {
+    const weiAmount = ethers.parseEther(amount.toString());
+    const tx = await contract.projectComplete(weiAmount, projectName);
+    console.log(`Transaction sent: ${tx.hash}`);
+    await tx.wait();
+    console.log("Project marked as complete!");
+    return tx.hash;
+  } catch (error) {
+    console.error("Error in completeProject:", error);
     throw error;
   }
 };
