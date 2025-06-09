@@ -4,6 +4,7 @@ import razorpay from "../lib/razorpay";
 import orderCreateSchema from "../schemas/orderCreate.schema";
 import orderVerifySchema from "../schemas/orderVerify.schema";
 import { supabase } from "../lib/supabase";
+import { completeProject } from "../lib/ethers";
 
 class OrderController {
   async getOrderById(req: Request, res: Response) {
@@ -133,12 +134,14 @@ class OrderController {
       .digest("hex");
 
     if (data.razorpaySignature === expectedSignature) {
-      await supabase
+      const { data: paymentData } = await supabase
         .from("payments")
         .update({
           status: "success",
         })
-        .eq("order_id", data.orderId);
+        .eq("order_id", data.orderId)
+        .select()
+        .single();
 
       const { data: propertyData } = await supabase
         .from("property_data")
@@ -197,6 +200,8 @@ class OrderController {
           },
         ]);
       }
+
+      await completeProject(paymentData.amount, propertyData.name);
 
       res.status(200).json({
         success: true,
