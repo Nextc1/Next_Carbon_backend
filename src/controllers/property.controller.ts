@@ -70,6 +70,7 @@ class PropertyController {
           status: data?.status,
           price: data?.price,
           available_shares: data?.availableShares,
+          totalShares:data?.available_shares,
           location: data?.location,
           type: data?.type,
           image: data?.image,
