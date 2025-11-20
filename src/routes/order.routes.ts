@@ -3,9 +3,8 @@ import orderController from "../controllers/order.controller";
 
 const orderRouter = Router();
 
-orderRouter.post("/create", orderController.createOrder);
-orderRouter.get("/:orderId", orderController.getOrderById);
-orderRouter.post("/create", orderController.createOrder);
-orderRouter.post("/verify", orderController.verifyOrder);
+orderRouter.route("/:orderId").get(orderController.getOrderById);
+orderRouter.route("/create").post(orderController.createOrder);
+orderRouter.route("/verify").post(orderController.verifyOrder);
 
 export default orderRouter;
