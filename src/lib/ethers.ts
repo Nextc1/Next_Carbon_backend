@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { CONFIG } from "./config";
 
-const provider = new ethers.JsonRpcProvider(CONFIG.infuraApiKey);
+const provider = new ethers.JsonRpcProvider(CONFIG.infuraApiUrl);
 const wallet = new ethers.Wallet(CONFIG.privateKey, provider);
 
 const abi = [

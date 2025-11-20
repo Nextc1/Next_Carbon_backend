@@ -8,7 +8,7 @@ export const CONFIG = {
   razorpaySecret: process.env.RAZORPAY_SECRET ?? "",
   supabaseUri: process.env.SUPABASE_URI ?? "",
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
-  infuraApiKey: process.env.INFURA_API_KEY ?? "",
+  infuraApiUrl: process.env.INFURA_API_URL ?? "",
   privateKey: process.env.PRIVATE_KEY ?? "",
   contractAddress: process.env.CONTRACT_ADDRESS ?? "",
   companyAddress: process.env.COMPANY_ADDRESS ?? "",
